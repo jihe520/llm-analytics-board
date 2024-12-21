@@ -55,14 +55,14 @@ const paintCalendar = () => {
         },
       },
     ],
-    [
-      CalendarLabel,
-      {
-        width: 30,
-        textAlign: 'start',
-        text: () => dayjs.weekdaysShort().map((d, i) => (i % 2 == 0 ? '' : d)),
-      },
-    ],
+    // [
+    //   CalendarLabel,
+    //   {
+    //     width: 30,
+    //     textAlign: 'start',
+    //     text: () => dayjs.weekdaysShort().map((d, i) => (i % 2 == 0 ? '' : d)),
+    //   },
+    // ],
   ]
 );
 };
@@ -80,5 +80,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="ex-year"></div>
+  <div class="flex justify-center">
+    <div id="ex-year"></div>
+  </div>
 </template>

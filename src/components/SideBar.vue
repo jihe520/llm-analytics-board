@@ -1,27 +1,33 @@
 <script setup>
+import { ref } from 'vue';
 import { useChatDataStore } from '@/store/chatData';
+import AvatarSelector from '@/components/AvatarSelector.vue';
 
 const chatDataStore = useChatDataStore();
+const username = ref('Sanjin'); // 默认用户名
 
 defineProps({
   position: {
     type: String,
-    default: 'left' // 默认位置为左侧 , 右侧为统计
+    default: 'left'
   }
-})
+});
 
-// 上传文件相关: 对上传文件进行处理
+const emit = defineEmits(['avatarChange', 'usernameChange']);
+
+const handleUsernameChange = () => {
+  emit('usernameChange', username.value);
+};
+
 const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return
-    try {
-        await chatDataStore.loadFile(file);
-    }catch(err) {
-        console.error(err);
-    }
-    
-} 
-
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    await chatDataStore.loadFile(file);
+  } catch(err) {
+    console.error(err);
+  }
+};
 </script>
 
 <template>
@@ -36,20 +42,19 @@ const handleFileUpload = async (e) => {
       />
     </div>
     <div v-else>
-      <h2 class="text-lg font-semibold mb-4">数据统计</h2>
+      <h2 class="text-lg font-semibold mb-4">配置选项</h2>
       <div class="space-y-4">
         <div class="p-4 bg-gray-50 rounded-lg">
-          <h3 class="font-medium text-gray-700">最长对话</h3>
-          <p class="text-2xl font-bold text-blue-600">0</p>
+          <h3 class="font-medium text-gray-700 mb-2">用户名称</h3>
+          <input
+            type="text"
+            v-model="username"
+            @input="handleUsernameChange"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="请输入用户名"
+          />
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-          <h3 class="font-medium text-gray-700">总对话数</h3>
-          <p class="text-2xl font-bold text-blue-600">0</p>
-        </div>
-        <div class="p-4 bg-gray-50 rounded-lg">
-          <h3 class="font-medium text-gray-700">累计对话数</h3>
-          <p class="text-2xl font-bold text-blue-600">0</p>
-        </div>
+        <AvatarSelector @select="avatar => emit('avatarChange', avatar)" />
       </div>
     </div>
   </div>
