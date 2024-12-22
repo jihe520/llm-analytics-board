@@ -67,7 +67,15 @@ watch(() => chatDataStore.modelDistribution, (newData) => {
 const cardRef = ref(null)
 const downloadCard = async () => {
   if (!cardRef.value) return
-  const canvas = await html2canvas(cardRef.value)
+  
+  // 添加小延迟确保SVG完全加载
+  await new Promise(resolve => setTimeout(resolve, 100))
+  
+  const canvas = await html2canvas(cardRef.value, {
+    useCORS: true,
+    allowTaint: true
+  })
+  
   const link = document.createElement('a')
   link.download = 'chat-analysis.png'
   link.href = canvas.toDataURL()

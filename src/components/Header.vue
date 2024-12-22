@@ -1,13 +1,12 @@
 <script setup>
 import { ref, watch } from 'vue';
 import ArcticonsOpenaiChatgpt from '~icons/arcticons/openai-chatgpt?width=48px&height=48px';
-import avatar1 from '@/assets/avatars/avatar1.svg';
-import avatar2 from '@/assets/avatars/avatar2.svg';
-import avatar3 from '@/assets/avatars/avatar3.svg';
-import avatar4 from '@/assets/avatars/avatar4.svg';
-import avatar5 from '@/assets/avatars/avatar5.svg';
-import avatar6 from '@/assets/avatars/avatar6.svg';
-import html2canvas from 'html2canvas';
+import avatar1 from '@/assets/avatars/avatar1.svg?raw';
+import avatar2 from '@/assets/avatars/avatar2.svg?raw';
+import avatar3 from '@/assets/avatars/avatar3.svg?raw';
+import avatar4 from '@/assets/avatars/avatar4.svg?raw';
+import avatar5 from '@/assets/avatars/avatar5.svg?raw';
+import avatar6 from '@/assets/avatars/avatar6.svg?raw';
 
 const avatarMap = {
   'avatar1.svg': avatar1,
@@ -48,11 +47,9 @@ watch([() => props.avatar, () => props.username], ([newAvatar, newUsername]) => 
 
 <template>
   <div class="flex items-center gap-3 mb-4">
-    <img
-      :src="profile.avatar"
-      alt="Profile avatar"
-      class="w-12 h-12 rounded-full"
-    />
+    <div class="w-12 h-12 rounded-full overflow-hidden">
+      <div v-html="profile.avatar" class="w-full h-full"></div>
+    </div>
     <div>
       <h2 class="text-xl font-bold">{{ profile.name }}</h2>
       <p class="text-gray-600">@{{ profile.username }}</p>
