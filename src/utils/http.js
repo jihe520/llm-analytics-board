@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 const httpInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL + '/api',
+  baseURL: '/api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
@@ -12,6 +12,7 @@ const httpInstance = axios.create({
 
 // 请求拦截器
 httpInstance.interceptors.request.use((config) => {
+  console.log('Request URL:', config.baseURL + config.url)
   return config
 }, (error) => {
   console.error('请求配置错误:', error)

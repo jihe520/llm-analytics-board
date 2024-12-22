@@ -51,6 +51,7 @@ export const useChatDataStore = defineStore('chatData', () => {
         const date = new Date(timestamp * 1000);
         const dateStr = date.toISOString().split('T')[0];
         
+        contentAll.value += item.title + '\n';
         // 只处理2024年的数据
         if (dateStr.startsWith('2024')) {
           // 遍历每个消息，统计用户消息的时间分布
@@ -93,27 +94,27 @@ export const useChatDataStore = defineStore('chatData', () => {
 
           // 遍历mapping中的每个对话
           // 只处理2024年的数据
-          if (dateStr.startsWith('2024')) {
-            for (const messageId in item.mapping) {
-              const message = item.mapping[messageId].message;
-              // 如果message存在且有content且role为user或assistant
-              if (message && message.content && 
-                  (message.author?.role === 'user' || message.author?.role === 'assistant')) {
+          // if (dateStr.startsWith('2024')) {
+          //   for (const messageId in item.mapping) {
+          //     const message = item.mapping[messageId].message;
+          //     // 如果message存在且有content且role为user或assistant
+          //     if (message && message.content && 
+          //         (message.author?.role === 'user' || message.author?.role === 'assistant')) {
                 
-                // 排除代码类型的内容
-                if (message.content.content_type === 'text') {
-                  // 将text类型的parts内容添加到contentAll
-                  contentAll.value += message.content.parts.join('');
-                }
-                // // 如果是用户上下文信息,添加用户profile
-                // else if (message.content.content_type === 'user_editable_context' && 
-                //          message.content.user_profile && 
-                //          message.author.role === 'user') {
-                //   contentAll.value += message.content.user_profile;
-                // }
-              }
-            }
-          }
+          //       // 排除代码类型的内容
+          //       if (message.content.content_type === 'text') {
+          //         // 将text类型的parts内容添加到contentAll
+          //         contentAll.value += message.content.parts.join('');
+          //       }
+          //       // // 如果是用户上下文信息,添加用户profile
+          //       // else if (message.content.content_type === 'user_editable_context' && 
+          //       //          message.content.user_profile && 
+          //       //          message.author.role === 'user') {
+          //       //   contentAll.value += message.content.user_profile;
+          //       // }
+          //     }
+          //   }
+          // }
 
           // 只处理2024年的数据
           if (dateStr.startsWith('2024')) {
