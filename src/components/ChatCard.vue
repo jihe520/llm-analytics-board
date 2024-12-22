@@ -62,30 +62,40 @@ watch(() => chatDataStore.modelDistribution, (newData) => {
   modelData.value = newData
 }, { deep: true })
 
-// 功能按钮
-// 下载卡片相关
+// 功能按钮相关
 const cardRef = ref(null)
-const downloadCard = async () => {
+
+// 统一的截图逻辑
+const captureCard = async () => {
   if (!cardRef.value) return
   
   // 添加小延迟确保SVG完全加载
   await new Promise(resolve => setTimeout(resolve, 100))
   
-  const canvas = await html2canvas(cardRef.value, {
+  return await html2canvas(cardRef.value, {
     useCORS: true,
-    allowTaint: true
+    allowTaint: true,
+    scale: 2 // 提高图片质量
   })
-  
-  const link = document.createElement('a')
-  link.download = 'chat-analysis.png'
-  link.href = canvas.toDataURL()
-  link.click()
 }
+
+// 下载卡片
+const downloadCard = async () => {
+  try {
+    const canvas = await captureCard()
+    const link = document.createElement('a')
+    link.download = 'chat-analysis.png'
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+  } catch (err) {
+    console.error('下载失败:', err)
+  }
+}
+
 // 将卡片写入剪切板
 const toClipBoard = async () => {
-  if (!cardRef.value) return
   try {
-    const canvas = await html2canvas(cardRef.value)
+    const canvas = await captureCard()
     canvas.toBlob(async (blob) => {
       const clipboardItem = new ClipboardItem({ 'image/png': blob })
       await navigator.clipboard.write([clipboardItem])
