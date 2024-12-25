@@ -116,50 +116,46 @@ onMounted(() => {
 </script>
 
 <template>
-    <div 
-      ref="cardRef"
-      class="bg-white rounded-lg shadow-xl p-6 min-h-[400px] relative max-sm:"
-    >
-      <Header :avatar="props.avatar" :username="props.username"></Header>
-      
-      <div class="space-y-6">
-        <!-- StatsGrid  -->
-        <StatsGrid></StatsGrid>
-
-        <!-- 热力图将在这里渲染 -->
-        <CalHeatmap :data="dailyData" />
-        
-        <!-- 词云图和甜甜圈图并排显示 -->
-        <div class="flex gap-4">
-          <div class="w-1/2">
-            <WordCloud :keywords="keywords"></WordCloud>
-          </div>
-          <div class="w-1/2">
-            <DoughnutChart :chartData="modelData" />
-          </div>
-        </div>
-
-        <!-- 时间分布图将在这里渲染 -->
-        <BarChart :chartData="hourlyData"></BarChart>
-
+  <div 
+    ref="cardRef"
+    class="bg-white backdrop-blur-sm rounded-2xl shadow-lg p-6 min-h-[350px] relative w-[95vw] md:w-[600px] max-w-[600px] border border-gray-100 scale-90 transform"
+  >
+    <Header :avatar="props.avatar" :username="props.username"></Header>
+    
+    <div class="space-y-4">
+      <StatsGrid></StatsGrid>
+      <div class="flex justify-center w-full">
+        <CalHeatmap :data="dailyData" class="scale-90 transform" />
       </div>
-    </div>
+      
+      <div class="flex gap-3">
+        <div class="w-1/2">
+          <WordCloud :keywords="keywords"></WordCloud>
+        </div>
+        <div class="w-1/2">
+          <DoughnutChart :chartData="modelData" />
+        </div>
+      </div>
 
-    <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4">
-      <button
-        @click="downloadCard"
-        class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        <Icon icon="material-symbols:download" />
-        DownLoad
-      </button>
-
-      <button
-        @click="toClipBoard"
-        class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        <Icon icon="material-symbols:content-copy" />
-        ClipBoard
-      </button>
+      <BarChart :chartData="hourlyData"></BarChart>
     </div>
+  </div>
+
+  <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4">
+    <button
+      @click="downloadCard"
+      class="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+    >
+      <Icon icon="material-symbols:download" class="w-4 h-4"/>
+      DownLoad
+    </button>
+
+    <button
+      @click="toClipBoard"
+      class="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+    >
+      <Icon icon="material-symbols:content-copy" class="w-4 h-4"/>
+      ClipBoard
+    </button>
+  </div>
 </template>

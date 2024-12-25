@@ -53,7 +53,7 @@ watch(
         <Icon icon="mdi:message-group" class="w-8 h-8 text-blue-400"/>
         <div>
           <div class="font-bold text-xl">{{ stats.MaxConversationTurns }}</div>
-          <div class="text-gray-600 text-sm">单个对话最长对话次数</div>
+          <div class="text-gray-600 text-sm">单对话最长对话次数</div>
         </div>
       </div>
       

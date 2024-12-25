@@ -33,12 +33,12 @@ const colorConfig = (wordArray) => {
 
 
 <template>
-  <div class="w-full h-[200px] bg-white rounded-lg p-4">
+  <div class="w-full h-[150px] bg-white rounded-lg p-2">
     <vue-word-cloud
       :words="props.keywords"
       :color="colorConfig"
       font-family="Hiragino Sans GB, Microsoft YaHei"
-      :font-size-ratio="1"
+      :font-size-ratio="0.8"
       :animation-duration="1000"
       class="w-full h-full"
     />

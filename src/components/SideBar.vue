@@ -31,8 +31,8 @@ const handleFileUpload = async (e) => {
 </script>
 
 <template>
-  <div class="w-64 h-screen bg-white border-r border-gray-200 p-4">
-    <div v-if="position === 'left'">
+  <div class="w-64 h-screen bg-white border-r border-gray-200 p-4 shadow-lg">
+    <div v-if="position === 'left'" class=" h-full relative">
       <h2 class="text-lg font-semibold mb-4">上传对话记录</h2>
       <input
         type="file"
@@ -40,6 +40,19 @@ const handleFileUpload = async (e) => {
         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         @change="handleFileUpload"
       />
+      <div class="text-gray-500 text-sm mt-4">
+        上传后等待一小会
+      </div>
+      <!-- 底部 简介 -->
+      <div class="bg-gray-50 rounded-lg p-4 mt-4 absolute bottom-4 left-4 right-4">
+        <div class="flex justify-center items-center ">
+          <div class=" text-gray-500">
+            Build By <a href="https://github.com/jihe520" class="font-medium text-blue-500">Sanjin</a>
+            <br>
+            Copyright © 2024 All Rights Reserved
+          </div>
+        </div>
+      </div>
     </div>
     <div v-else>
       <h2 class="text-lg font-semibold mb-4">配置选项</h2>
