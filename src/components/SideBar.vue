@@ -47,7 +47,7 @@ const handleFileUpload = async (e) => {
       <div class="bg-gray-50 rounded-lg p-4 mt-4 absolute bottom-4 left-4 right-4">
         <div class="flex justify-center items-center ">
           <div class=" text-gray-500">
-            Build By <a href="https://github.com/jihe520" class="font-medium text-blue-500">Sanjin</a>
+            Build By <a href="https://github.com/jihe520" class="font-medium text-blue-500" target="_blank">Sanjin</a>
             <br>
             Copyright © 2024 All Rights Reserved
           </div>

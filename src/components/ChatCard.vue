@@ -75,7 +75,7 @@ const captureCard = async () => {
   return await html2canvas(cardRef.value, {
     useCORS: true,
     allowTaint: true,
-    scale: 2 // 提高图片质量
+    scale: 4 // 提高图片质量
   })
 }
 
@@ -118,7 +118,7 @@ onMounted(() => {
 <template>
   <div 
     ref="cardRef"
-    class="bg-white backdrop-blur-sm rounded-2xl shadow-lg p-6 min-h-[350px] relative w-[95vw] md:w-[600px] max-w-[600px] border border-gray-100 scale-90 transform"
+    class="bg-white backdrop-blur-sm rounded-2xl shadow-lg p-6 min-h-[350px] relative w-[95vw] md:w-[600px] max-w-[600px] border border-gray-100"
   >
     <Header :avatar="props.avatar" :username="props.username"></Header>
     
