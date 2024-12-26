@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { extractKeywords } from '@/apis/keywordsAPI';
+import { Segment, useDefault } from 'segmentit';
 
 export const useChatDataStore = defineStore('chatData', () => {
   const rawData = ref([]); // 原始数据
@@ -128,8 +129,6 @@ export const useChatDataStore = defineStore('chatData', () => {
         }
       }
       
-      console.log('modelDistribution:', modelDistribution.value);
-
       hourlyDistribution.value = hourCounts.map(count => count);
       
       // 更新统计数据
@@ -137,22 +136,37 @@ export const useChatDataStore = defineStore('chatData', () => {
       maxConversationTurns.value = maxTurns;
       totalGPTWords.value = totalWords;
 
-      // 发送文本到后端提取关键词
+      // 替换原有的后端关键词提取逻辑
       try {
-        const result = await extractKeywords(contentAll.value);
+        const segmentit = useDefault(new Segment());
+        const segments = segmentit.doSegment(contentAll.value);
         
-        if (result.code === 200) {
-          contentTopics.value = result.data;
-          // 转换数据格式为 [word, weight] 数组
-          contentTopics.value = contentTopics.value.map(item => [
-            item.word, 
-            Math.floor(Math.random() * 51) // 生成0到50之间的随机数
+        // 统计词频
+        const wordCount = {};
+        segments.forEach(segment => {
+          if (segment.p !== 'punct' && segment.w.length > 1) { // 排除标点符号和单字
+            wordCount[segment.w] = (wordCount[segment.w] || 0) + 1;
+          }
+        });
+
+        // 转换为数组并排序
+        const sortedWords = Object.entries(wordCount)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10) // 取前10个关键词
+          .map(([word, count]) => [
+            word,
+            Math.floor(count * 5) // 将词频转换为权重
           ]);
-        } else {
-          console.error('提取关键词失败:', result.message);
-        }
+
+        // 词频 随机
+        const randomWords = sortedWords.map(([word, count]) => [
+          word,
+          Math.floor(Math.random() * 51) // 生成0到50之间的随机数
+        ]);
+        console.log("randomWords",randomWords)
+        contentTopics.value = randomWords;
       } catch (error) {
-        console.error('请求关键词接口失败:', error);
+        console.error('关键词提取失败:', error);
       }
 
       dailyData.value = Object.entries(dailyCounts).map(([date, value]) => ({ date, value }));

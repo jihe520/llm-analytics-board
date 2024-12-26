@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import ChatCard from '@/components/ChatCard.vue';
 import Sidebar from '@/components/SideBar.vue';
+import { Icon } from '@iconify/vue'; 
 
 const selectedAvatar = ref('avatar1.svg');
 const username = ref('Sanjin');

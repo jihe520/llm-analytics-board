@@ -40,8 +40,12 @@ const handleFileUpload = async (e) => {
         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         @change="handleFileUpload"
       />
-      <div class="text-gray-500 text-sm mt-4">
+      <div class="text-green-800 text-sm mt-4">
         上传后等待一小会
+      </div>
+      <div class="text-red-600 text-1xl mt-4">
+        分析在本地，不会请求网络API<br>
+        不会将你的数据上传到网络
       </div>
       <!-- 底部 简介 -->
       <div class="bg-gray-50 rounded-lg p-4 mt-4 absolute bottom-4 left-4 right-4">
