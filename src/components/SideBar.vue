@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, provide } from 'vue';
 import { useChatDataStore } from '@/store/chatData';
+import { useProfileStore } from '@/store/profileStore';
 import AvatarSelector from '@/components/AvatarSelector.vue';
 
 const chatDataStore = useChatDataStore();
-const username = ref('Sanjin'); // 默认用户名
+const profileStore = useProfileStore();
 
 defineProps({
   position: {
@@ -13,33 +14,25 @@ defineProps({
   }
 });
 
-const emit = defineEmits(['avatarChange', 'usernameChange']);
-
-const handleUsernameChange = () => {
-  emit('usernameChange', username.value);
-};
-
 const handleFileUpload = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
   try {
     await chatDataStore.loadFile(file);
-  } catch(err) {
+  } catch (err) {
     console.error(err);
   }
 };
+
 </script>
 
 <template>
   <div class="w-64 h-screen bg-white border-r border-gray-200 p-4 shadow-lg">
     <div v-if="position === 'left'" class=" h-full relative">
       <h2 class="text-lg font-semibold mb-4">上传对话记录</h2>
-      <input
-        type="file"
-        accept=".json"
+      <input type="file" accept=".json"
         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-        @change="handleFileUpload"
-      />
+        @change="handleFileUpload" />
       <div class="text-green-800 text-sm mt-4">
         上传后等待一小会
       </div>
@@ -63,15 +56,11 @@ const handleFileUpload = async (e) => {
       <div class="space-y-4">
         <div class="p-4 bg-gray-50 rounded-lg">
           <h3 class="font-medium text-gray-700 mb-2">用户名称</h3>
-          <input
-            type="text"
-            v-model="username"
-            @input="handleUsernameChange"
+          <input type="text" v-model="profileStore.profile.username"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="请输入用户名"
-          />
+            placeholder="请输入用户名" />
         </div>
-        <AvatarSelector @select="avatar => emit('avatarChange', avatar)" />
+        <AvatarSelector />
       </div>
     </div>
   </div>

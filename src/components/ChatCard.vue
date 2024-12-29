@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch,onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import html2canvas from 'html2canvas'
 import CalHeatmap from '@/components/CalHeatmap.vue';
 import WordCloud from '@/components/WordCloud.vue';
@@ -11,19 +11,6 @@ import Header from '@/components/Header.vue';
 import DoughnutChart from '@/components/DoughnutChart.vue';
 
 const chatDataStore = useChatDataStore();
-
-// 头像profile相关
-const props = defineProps({
-  avatar: {
-    type: String,
-    default: 'avatar1.svg'
-  },
-  username: {
-    type: String,
-    default: 'Sanjin'
-  }
-});
-
 
 // 热力图相关
 const dailyData = ref([
@@ -43,21 +30,21 @@ watch(() => chatDataStore.hourlyDistribution, (newData) => {
 
 // 词云图
 const keywords = ref([
-      [ '对话',  45 ],
-      [ '问题',  35 ],
-      [ '学习',  30 ],
-      [ '工作',  25 ],
-      [ '生活',  20 ],
-    ])
+  ['对话', 45],
+  ['问题', 35],
+  ['学习', 30],
+  ['工作', 25],
+  ['生活', 20],
+])
 watch(() => chatDataStore.contentTopics, (newData) => {
   keywords.value = newData
 }, { deep: true });
 
 // 添加模型分布数据
 const modelData = ref({
-      'gpt-3.5-turbo': 10,
-      'gpt-4': 5,
-    })
+  'gpt-3.5-turbo': 10,
+  'gpt-4': 5,
+})
 watch(() => chatDataStore.modelDistribution, (newData) => {
   modelData.value = newData
 }, { deep: true })
@@ -68,10 +55,10 @@ const cardRef = ref(null)
 // 统一的截图逻辑
 const captureCard = async () => {
   if (!cardRef.value) return
-  
+
   // 添加小延迟确保SVG完全加载
   await new Promise(resolve => setTimeout(resolve, 100))
-  
+
   return await html2canvas(cardRef.value, {
     useCORS: true,
     allowTaint: true,
@@ -116,18 +103,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <div 
-    ref="cardRef"
-    class="bg-white backdrop-blur-sm rounded-2xl shadow-lg p-6 min-h-[350px] relative w-[95vw] md:w-[600px] max-w-[600px] border border-gray-100"
-  >
-    <Header :avatar="props.avatar" :username="props.username"></Header>
-    
+  <div ref="cardRef"
+    class="bg-white backdrop-blur-sm rounded-2xl shadow-lg p-6 min-h-[350px] relative w-[95vw] md:w-[600px] max-w-[600px] border border-gray-100">
+    <Header></Header>
+
     <div class="space-y-4">
       <StatsGrid></StatsGrid>
       <div class="flex justify-center w-full">
         <CalHeatmap :data="dailyData" class="scale-90 transform" />
       </div>
-      
+
       <div class="flex gap-3">
         <div class="w-1/2">
           <WordCloud :keywords="keywords"></WordCloud>
@@ -142,19 +127,15 @@ onMounted(() => {
   </div>
 
   <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4">
-    <button
-      @click="downloadCard"
-      class="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-    >
-      <Icon icon="material-symbols:download" class="w-4 h-4"/>
+    <button @click="downloadCard"
+      class="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+      <Icon icon="material-symbols:download" class="w-4 h-4" />
       DownLoad
     </button>
 
-    <button
-      @click="toClipBoard"
-      class="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-    >
-      <Icon icon="material-symbols:content-copy" class="w-4 h-4"/>
+    <button @click="toClipBoard"
+      class="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+      <Icon icon="material-symbols:content-copy" class="w-4 h-4" />
       ClipBoard
     </button>
   </div>

@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { extractKeywords } from '@/apis/keywordsAPI';
 import { Segment, useDefault } from 'segmentit';
 
 export const useChatDataStore = defineStore('chatData', () => {
