@@ -1,10 +1,8 @@
 <script setup>
-import { ref, provide } from 'vue';
 import { useChatDataStore } from '@/store/chatData';
 import { useProfileStore } from '@/store/profileStore';
 import AvatarSelector from '@/components/AvatarSelector.vue';
 import ThemeSelector from '@/components/ThemeSelector.vue';
-import { Icon } from '@iconify/vue'
 
 const chatDataStore = useChatDataStore();
 const profileStore = useProfileStore();
@@ -43,6 +41,7 @@ const handleFileUpload = async (e) => {
         不会将你的数据上传到网络
       </div>
       <!-- 底部 简介 -->
+      <!-- TODO: 添加github等媒体 -->
       <div class="bg-gray-50 rounded-lg p-4  absolute bottom-1">
         <div class="flex justify-center items-center ">
           <div class=" text-gray-500">

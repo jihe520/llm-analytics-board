@@ -9,6 +9,7 @@ import BarChart from '@/components/BarChart.vue';
 import StatsGrid from '@/components/StatsGrid.vue';
 import Header from '@/components/Header.vue';
 import DoughnutChart from '@/components/DoughnutChart.vue';
+import dayjs from 'dayjs';
 
 const chatDataStore = useChatDataStore();
 

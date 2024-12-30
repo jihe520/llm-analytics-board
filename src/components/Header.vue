@@ -1,8 +1,5 @@
 <script setup>
-import { ref, watch, inject } from 'vue';
-
 import chatgptIcon from '@/assets/chatgpt.svg?raw';
-
 import { useProfileStore } from '@/store/profileStore';
 
 const profileStore = useProfileStore();
