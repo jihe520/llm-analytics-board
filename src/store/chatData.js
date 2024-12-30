@@ -2,196 +2,207 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { Segment, useDefault } from 'segmentit';
 
-export const useChatDataStore = defineStore('chatData', () => {
-  const rawData = ref([]); // 原始数据
-  const dailyData = ref([]); // 每日对话次数数据
-  const hourlyDistribution = ref(Array(24).fill(0)); // 24小时分布
+export const useChatDataStore = defineStore(
+  'chatData',
+  () => {
+    const rawData = ref([]); // 原始数据
 
-  //  stats Grid 
-  const totalConversations = ref(0); // 累计对话次数
-  const maxConversationTurns = ref(0); // 单个对话最长对话次数
-  const totalGPTWords = ref(0); // GPT生成的总字数
+    // HeatMap
+    const dailyData = ref([]); // 每日对话次数数据
 
-  const contentAll = ref('') // 所有对话内容
-  const contentTopics = ref([])
+    // BarChart
+    const hourlyDistribution = ref(Array(24).fill(0)); // 24小时分布
 
-  const modelDistribution = ref({});  // 用于存储不同模型的对话次数
-  const imageCount = ref(0); // AI创建图片数量
+    //  stats Grid
+    const totalConversations = ref(0); // 累计对话次数
+    const maxConversationTurns = ref(0); // 单个对话最长对话次数
+    const totalGPTWords = ref(0); // GPT生成的总字数
 
-  // 加载 JSON 数据
-  const loadFile = async (file) => {
-    try {
-      const fileContent = await file.text();
-      
-      rawData.value = JSON.parse(fileContent);
-      
-      await processData();
-    } catch (error) {
-      console.error("加载文件失败详情：", error);
-      throw new Error("文件解析失败");
-    }
-  };
+    // WordCloud
+    const contentAll = ref(''); // 所有对话内容
+    const contentTopics = ref([]); // 对话主题
 
-  // 处理原始数据为每日对话次数
-  const processData = async () => {
-    try {
-      if (!Array.isArray(rawData.value)) {
-        throw new Error("原始数据不是数组");
+    // DoughnutChart
+    const modelDistribution = ref({}); // 用于存储不同模型的对话次数
+    // const imageCount = ref(0); // AI创建图片数量
+
+    // 加载 JSON 数据
+    const loadFile = async (file) => {
+      try {
+        const fileContent = await file.text();
+
+        rawData.value = JSON.parse(fileContent);
+
+        await processData();
+      } catch (error) {
+        console.error('加载文件失败详情：', error);
+        throw new Error('文件解析失败');
       }
+    };
 
-      const dailyCounts = {};
-      const hourCounts = Array(24).fill(0);
-      let totalDays = 0;
-      let maxTurns = 0;
-      let totalWords = 0;
-      let conversationCount = 0;
+    // 处理原始数据为每日对话次数
+    const processData = async () => {
+      try {
+        if (!Array.isArray(rawData.value)) {
+          throw new Error('原始数据不是数组');
+        }
 
-      for (const item of rawData.value) {
-        const timestamp = item.create_time;
-        const date = new Date(timestamp * 1000);
-        const dateStr = date.toISOString().split('T')[0];
-        
-        contentAll.value += item.title + '\n';
-        // 只处理2024年的数据
-        if (dateStr.startsWith('2024')) {
-          // 遍历每个消息，统计用户消息的时间分布
-          for (const messageId in item.mapping) {
-            const message = item.mapping[messageId].message;
-            if (message?.author?.role === 'user' && message.create_time) {
-              const msgDate = new Date(message.create_time * 1000);
-              const hour = msgDate.getHours();
-              hourCounts[hour]++;
-            }
-          }
-          
+        const dailyCounts = {};
+        const hourCounts = Array(24).fill(0);
+        let maxTurns = 0;
+        let totalWords = 0;
+        let conversationCount = 0;
 
-          // 计算单个对话的轮次
-          const turns = Object.values(item.mapping).filter(msg => 
-            msg.message?.author?.role === 'user' || 
-            msg.message?.author?.role === 'assistant'
-          ).length;
-          
-          maxTurns = Math.max(maxTurns, turns);
-          conversationCount++;
+        for (const item of rawData.value) {
+          const timestamp = item.create_time;
+          const date = new Date(timestamp * 1000);
+          const dateStr = date.toISOString().split('T')[0];
 
-          
-          for (const messageId in item.mapping) {
-          // 计算GPT生成的文字数量
-            const message = item.mapping[messageId].message;
-            if (message?.author?.role === 'assistant' && 
-                message.content?.content_type === 'text') {
-              totalWords += message.content.parts.join('').length;
-            }
-
-            // 获取模型信息 ，如果是unknown，则不统计
-            const modelSlug = item.mapping[messageId]?.message?.metadata?.model_slug || 'unknown';
-            if (modelSlug !== 'unknown') {
-              modelDistribution.value[modelSlug] = (modelDistribution.value[modelSlug] || 0) + 1;
-            }
-          }
-
-       
-
-          // 遍历mapping中的每个对话
-          // 只处理2024年的数据
-          // if (dateStr.startsWith('2024')) {
-          //   for (const messageId in item.mapping) {
-          //     const message = item.mapping[messageId].message;
-          //     // 如果message存在且有content且role为user或assistant
-          //     if (message && message.content && 
-          //         (message.author?.role === 'user' || message.author?.role === 'assistant')) {
-                
-          //       // 排除代码类型的内容
-          //       if (message.content.content_type === 'text') {
-          //         // 将text类型的parts内容添加到contentAll
-          //         contentAll.value += message.content.parts.join('');
-          //       }
-          //       // // 如果是用户上下文信息,添加用户profile
-          //       // else if (message.content.content_type === 'user_editable_context' && 
-          //       //          message.content.user_profile && 
-          //       //          message.author.role === 'user') {
-          //       //   contentAll.value += message.content.user_profile;
-          //       // }
-          //     }
-          //   }
-          // }
-
+          contentAll.value += item.title + '\n';
           // 只处理2024年的数据
           if (dateStr.startsWith('2024')) {
-            // 统计次数(同一日期，次数合并)
-            if (dailyCounts[dateStr]) {
-              dailyCounts[dateStr] += Object.keys(item.mapping).length;
-            } else {
-              dailyCounts[dateStr] = Object.keys(item.mapping).length;
+            // 遍历每个消息，统计用户消息的时间分布
+            for (const messageId in item.mapping) {
+              const message = item.mapping[messageId].message;
+              if (message?.author?.role === 'user' && message.create_time) {
+                const msgDate = new Date(message.create_time * 1000);
+                const hour = msgDate.getHours();
+                hourCounts[hour]++;
+              }
+            }
+
+            // 计算单个对话的轮次
+            const turns = Object.values(item.mapping).filter(
+              (msg) =>
+                msg.message?.author?.role === 'user' ||
+                msg.message?.author?.role === 'assistant'
+            ).length;
+
+            maxTurns = Math.max(maxTurns, turns);
+            conversationCount++;
+
+            for (const messageId in item.mapping) {
+              // 计算GPT生成的文字数量
+              const message = item.mapping[messageId].message;
+              if (
+                message?.author?.role === 'assistant' &&
+                message.content?.content_type === 'text'
+              ) {
+                totalWords += message.content.parts.join('').length;
+              }
+
+              // 获取模型信息 ，如果是unknown，则不统计
+              const modelSlug =
+                item.mapping[messageId]?.message?.metadata?.model_slug ||
+                'unknown';
+              if (modelSlug !== 'unknown') {
+                modelDistribution.value[modelSlug] =
+                  (modelDistribution.value[modelSlug] || 0) + 1;
+              }
+            }
+
+            // 遍历mapping中的每个对话
+            // 只处理2024年的数据
+            // if (dateStr.startsWith('2024')) {
+            //   for (const messageId in item.mapping) {
+            //     const message = item.mapping[messageId].message;
+            //     // 如果message存在且有content且role为user或assistant
+            //     if (message && message.content &&
+            //         (message.author?.role === 'user' || message.author?.role === 'assistant')) {
+
+            //       // 排除代码类型的内容
+            //       if (message.content.content_type === 'text') {
+            //         // 将text类型的parts内容添加到contentAll
+            //         contentAll.value += message.content.parts.join('');
+            //       }
+            //       // // 如果是用户上下文信息,添加用户profile
+            //       // else if (message.content.content_type === 'user_editable_context' &&
+            //       //          message.content.user_profile &&
+            //       //          message.author.role === 'user') {
+            //       //   contentAll.value += message.content.user_profile;
+            //       // }
+            //     }
+            //   }
+            // }
+
+            // 只处理2024年的数据
+            if (dateStr.startsWith('2024')) {
+              // 统计次数(同一日期，次数合并)
+              if (dailyCounts[dateStr]) {
+                dailyCounts[dateStr] += Object.keys(item.mapping).length;
+              } else {
+                dailyCounts[dateStr] = Object.keys(item.mapping).length;
+              }
             }
           }
         }
-      }
-      
-      hourlyDistribution.value = hourCounts.map(count => count);
-      
-      // 更新统计数据
-      totalConversations.value = conversationCount;
-      maxConversationTurns.value = maxTurns;
-      totalGPTWords.value = totalWords;
 
-      // 替换原有的后端关键词提取逻辑
-      try {
-        const segmentit = useDefault(new Segment());
-        const segments = segmentit.doSegment(contentAll.value);
-        
-        // 统计词频
-        const wordCount = {};
-        segments.forEach(segment => {
-          if (segment.p !== 'punct' && segment.w.length > 1) { // 排除标点符号和单字
-            wordCount[segment.w] = (wordCount[segment.w] || 0) + 1;
-          }
-        });
+        hourlyDistribution.value = hourCounts.map((count) => count);
 
-        // 转换为数组并排序
-        const sortedWords = Object.entries(wordCount)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 10) // 取前10个关键词
-          .map(([word, count]) => [
+        // 更新统计数据
+        totalConversations.value = conversationCount;
+        maxConversationTurns.value = maxTurns;
+        totalGPTWords.value = totalWords;
+
+        // 替换原有的后端关键词提取逻辑
+        try {
+          const segmentit = useDefault(new Segment());
+          const segments = segmentit.doSegment(contentAll.value);
+
+          // 统计词频
+          const wordCount = {};
+          segments.forEach((segment) => {
+            if (segment.p !== 'punct' && segment.w.length > 1) {
+              // 排除标点符号和单字
+              wordCount[segment.w] = (wordCount[segment.w] || 0) + 1;
+            }
+          });
+
+          // 转换为数组并排序
+          const sortedWords = Object.entries(wordCount)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10) // 取前10个关键词
+            .map(([word, count]) => [
+              word,
+              Math.floor(count * 5), // 将词频转换为权重
+            ]);
+
+          // 词频 随机
+          const randomWords = sortedWords.map(([word, count]) => [
             word,
-            Math.floor(count * 5) // 将词频转换为权重
+            Math.floor(Math.random() * 51), // 生成0到50之间的随机数
           ]);
+          contentTopics.value = randomWords;
+        } catch (error) {
+          console.error('关键词提取失败:', error);
+        }
 
-        // 词频 随机
-        const randomWords = sortedWords.map(([word, count]) => [
-          word,
-          Math.floor(Math.random() * 51) // 生成0到50之间的随机数
-        ]);
-        console.log("randomWords",randomWords)
-        contentTopics.value = randomWords;
+        dailyData.value = Object.entries(dailyCounts).map(([date, value]) => ({
+          date,
+          value,
+        }));
       } catch (error) {
-        console.error('关键词提取失败:', error);
+        console.error('处理数据失败：', error);
+        throw error;
       }
+    };
 
-      dailyData.value = Object.entries(dailyCounts).map(([date, value]) => ({ date, value }));
-
-
-    } catch (error) {
-      console.error("处理数据失败：", error);
-      throw error;
-    }
-  };
-
-  return {
-    rawData,
-    dailyData,
-    hourlyDistribution,
-    totalConversations,
-    maxConversationTurns,
-    totalGPTWords,
-    contentTopics,
-    loadFile,
-    modelDistribution,
-  };
-}, {
-  persist: true,
-});
-
+    return {
+      rawData,
+      dailyData,
+      hourlyDistribution,
+      totalConversations,
+      maxConversationTurns,
+      totalGPTWords,
+      contentTopics,
+      loadFile,
+      modelDistribution,
+    };
+  },
+  {
+    persist: true,
+  }
+);
 
 /**
  * [

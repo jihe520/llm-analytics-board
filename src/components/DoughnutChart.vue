@@ -29,7 +29,7 @@ const initChart = () => {
   // 将数据转换为Chart.js需要的格式
   const labels = Object.keys(props.chartData)
   const data = Object.values(props.chartData)
-  
+
   const config = {
     type: 'doughnut',
     data: {
@@ -74,4 +74,4 @@ watch(() => props.chartData, () => {
 onMounted(() => {
   initChart()
 })
-</script> 
+</script>
