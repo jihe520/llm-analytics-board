@@ -119,7 +119,7 @@ onMounted(() => {
           <WordCloud :keywords="keywords"></WordCloud>
         </div>
         <div class="w-1/2">
-          <DoughnutChart :chartData="modelData" />
+          <DoughnutChart :modelDistribution="modelData" />
         </div>
       </div>
 

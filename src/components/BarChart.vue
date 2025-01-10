@@ -61,11 +61,17 @@ const initChart = () => {
 }
 
 // 监听数据变化
-watch([() => props.chartData, () => props.chartLabels, () => props.title, () => themeStore.currentThemeConfig], () => {
-  initChart()
-}, {
-  deep: true
-})
+watch(
+  () => [props.chartData, props.chartLabels, props.title, themeStore.currentThemeConfig],
+  (newVal, oldVal) => {
+    if (JSON.stringify(newVal) === JSON.stringify(oldVal)) return
+    if (chartInstance.value) {
+      chartInstance.value.destroy()
+    }
+    initChart()
+  },
+  { deep: true }
+)
 
 onMounted(() => {
   initChart()
