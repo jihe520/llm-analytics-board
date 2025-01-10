@@ -38,7 +38,8 @@ const handleFileUpload = async (e) => {
       </div>
       <div class="text-red-600 text-1xl mt-4">
         分析在本地，不会请求网络API<br>
-        不会将你的数据上传到网络
+        不会将你的数据上传到网络<br>
+        有点卡，正常现象
       </div>
       <!-- 底部 简介 -->
       <!-- TODO: 添加github等媒体 -->

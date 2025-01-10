@@ -4,11 +4,12 @@ import CalHeatmap from 'cal-heatmap';
 import 'cal-heatmap/cal-heatmap.css';
 import Tooltip from 'cal-heatmap/plugins/Tooltip';
 import dayjs from 'dayjs';
-import weekday from 'dayjs/plugin/weekday'  // 添加这行
-import localeData from 'dayjs/plugin/localeData'  // 添加这行
+import weekday from 'dayjs/plugin/weekday';
+import localeData from 'dayjs/plugin/localeData';
+import { useThemeStore } from '@/store/themeStore';
 
-dayjs.extend(weekday)  // 添加这行
-dayjs.extend(localeData)  // 添加这行
+dayjs.extend(weekday);
+dayjs.extend(localeData);
 
 const props = defineProps({
   data: {
@@ -22,6 +23,7 @@ const props = defineProps({
   },
 });
 
+const themeStore = useThemeStore();
 const cal = new CalHeatmap();
 
 const paintCalendar = () => {
@@ -35,7 +37,7 @@ const paintCalendar = () => {
       },
       date: { start: new Date('2024-01-01') },
       range: 1,
-      scale: { color: { type: 'linear', scheme: 'PRGn', domain: [0, 40] } },
+      scale: themeStore.currentThemeConfig.calHeatmapOptions.scale,
       domain: {
         type: 'year',
         label: { text: null },
@@ -54,14 +56,6 @@ const paintCalendar = () => {
           },
         },
       ],
-      // [
-      //   CalendarLabel,
-      //   {
-      //     width: 30,
-      //     textAlign: 'start',
-      //     text: () => dayjs.weekdaysShort().map((d, i) => (i % 2 == 0 ? '' : d)),
-      //   },
-      // ],
     ]
   );
 };
@@ -69,9 +63,13 @@ const paintCalendar = () => {
 // 监听数据变化
 watch(() => props.data, (newData) => {
   if (newData && newData.length > 0) {
-    paintCalendar()
+    paintCalendar();
   }
-})
+});
+
+watch(() => themeStore.currentThemeConfig, () => {
+  paintCalendar();
+}, { deep: true });
 
 onMounted(() => {
   paintCalendar();

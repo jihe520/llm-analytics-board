@@ -7,6 +7,7 @@
 <script setup>
 import { Chart } from 'chart.js/auto'
 import { onMounted, ref, watch } from 'vue'
+import { useThemeStore } from '@/store/themeStore'
 
 // 定义 props
 const props = defineProps({
@@ -28,6 +29,8 @@ const props = defineProps({
 const chartInstance = ref(null)
 const chartCanvas = ref(null)
 
+const themeStore = useThemeStore()
+
 const initChart = () => {
   const data = {
     labels: props.chartLabels,
@@ -45,36 +48,7 @@ const initChart = () => {
   const config = {
     type: 'bar',
     data: data,
-    options: {
-      maintainAspectRatio: false, 
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        // title: {
-        //   display: true,
-        //   text: props.title
-        // }
-      },
-      scales: {
-        x: {
-          ticks: {
-            autoSkip: false,
-            maxRotation: 0,
-            minRotation: 0
-          },
-          grid: {
-            display: false  // 隐藏 x 轴网格线
-          }
-        },
-        y: {
-          grid: {
-            display: false  // 隐藏 y 轴网格线
-          }
-        }
-      }
-    }
+    options: themeStore.currentThemeConfig.barChartsOptions
   }
 
   // 销毁旧的图表实例
@@ -87,8 +61,10 @@ const initChart = () => {
 }
 
 // 监听数据变化
-watch([() => props.chartData, () => props.chartLabels, () => props.title], () => {
+watch([() => props.chartData, () => props.chartLabels, () => props.title, () => themeStore.currentThemeConfig], () => {
   initChart()
+}, {
+  deep: true
 })
 
 onMounted(() => {

@@ -7,6 +7,7 @@
 <script setup>
 import { Chart } from 'chart.js/auto'
 import { onMounted, ref, watch } from 'vue'
+import { useThemeStore } from '@/store/themeStore'
 
 const props = defineProps({
   chartData: {
@@ -24,6 +25,9 @@ const props = defineProps({
 
 const chartInstance = ref(null)
 const chartCanvas = ref(null)
+
+const themeStore = useThemeStore()
+
 
 const initChart = () => {
   // 将数据转换为Chart.js需要的格式
@@ -45,19 +49,7 @@ const initChart = () => {
         borderWidth: 1
       }]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'right',
-        },
-        // title: {
-        //   display: true,
-        //   text: props.title
-        // }
-      }
-    }
+    options: themeStore.currentThemeConfig.doughnutChartsOptions
   }
 
   if (chartInstance.value) {
@@ -67,9 +59,16 @@ const initChart = () => {
   chartInstance.value = new Chart(chartCanvas.value, config)
 }
 
-watch(() => props.chartData, () => {
-  initChart()
-}, { deep: true })
+watch(
+  // 监听多个数据源
+  [() => props.chartData, () => themeStore.currentThemeConfig],
+  // 回调函数
+  () => {
+    initChart();
+  },
+  // 配置选项
+  { deep: true }
+);
 
 onMounted(() => {
   initChart()
